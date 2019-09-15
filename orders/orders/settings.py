@@ -24,8 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework.authtoken',
     'django_rest_passwordreset',
-    'authmail',
     'shop',
 ]
 
@@ -39,10 +39,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-# AUTHENTICATION_BACKENDS = (
-#     'django.contrib.auth.backends.ModelBackend',
-#     'authmail.authentication.EmailAuthBackend',
-# )
 
 ROOT_URLCONF = 'orders.urls'
 
@@ -108,8 +104,8 @@ REST_FRAMEWORK = {
     ),
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        # 'rest_framework.authentication.SessionAuthentication',
-        # 'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
 

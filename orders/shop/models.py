@@ -1,5 +1,4 @@
 from django.contrib.auth.base_user import BaseUserManager
-from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.conf import settings
 from django.core.files.storage import FileSystemStorage
@@ -64,19 +63,13 @@ class User(AbstractUser):
     """
     Стандартная модель пользователей
     """
-    REQUIRED_FIELDS = []
     objects = UserManager()
-    USERNAME_FIELD = 'email'
-    email = models.EmailField(verbose_name='E-mail', unique=True)
-    company = models.CharField(verbose_name='Компания', max_length=40, blank=True)
-    position = models.CharField(verbose_name='Должность', max_length=40, blank=True)
-    username_validator = UnicodeUsernameValidator()
-    username = models.CharField(max_length=150, validators=[username_validator, ])
-    is_active = models.BooleanField(default=False)
+    company = models.CharField(verbose_name='Компания', max_length=40, blank=True, null=True)
+    position = models.CharField(verbose_name='Должность', max_length=40, blank=True, null=True)
     type = models.CharField(verbose_name='Тип пользователя', choices=USER_TYPE_CHOICES, max_length=5, default='buyer')
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        return self.email
 
     class Meta:
         verbose_name = 'Пользователь'
@@ -271,3 +264,4 @@ class ConfirmEmailToken(models.Model):
 
     def __str__(self):
         return "Password reset token for user {user}".format(user=self.user)
+
