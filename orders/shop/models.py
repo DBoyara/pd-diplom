@@ -146,8 +146,8 @@ class Parameter(models.Model):
     name = models.CharField(max_length=50, verbose_name='Название параметра')
 
     class Meta:
-        verbose_name = 'Параметр'
-        verbose_name_plural = 'Список параметров'
+        verbose_name = 'Название параметра'
+        verbose_name_plural = "Список названий параметров"
         ordering = ('-name',)
 
     def __str__(self):
@@ -214,7 +214,9 @@ class OrderItem(models.Model):
 
     product_info = models.ForeignKey(ProductInfo, verbose_name='Информация о продукте', related_name='ordered_items',
                                      blank=True, on_delete=models.CASCADE)
-    quantity = models.PositiveIntegerField(verbose_name='Количество')
+    quantity = models.PositiveIntegerField(default=1, verbose_name='Количество')
+    price = models.PositiveIntegerField(default=0, verbose_name='Цена')
+    total_amount = models.PositiveIntegerField(default=0, verbose_name='Общая стоимость')
 
     class Meta:
         verbose_name = 'Заказанная позиция'
@@ -224,7 +226,11 @@ class OrderItem(models.Model):
         ]
 
     def __str__(self):
-        return f'{self.order} - {self.product_info.model} - {self.quantity}'
+        return f'№ {self.order} - {self.product_info.model}. Кол-во: {self.quantity}. Сумма {self.total_amount} '
+
+    def save(self, *args, **kwargs):
+        self.total_amount = self.price * self.quantity
+        super(OrderItem, self).save(*args, **kwargs)
 
 
 class ConfirmEmailToken(models.Model):
