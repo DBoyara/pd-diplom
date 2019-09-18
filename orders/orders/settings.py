@@ -82,8 +82,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'UTC'
+LANGUAGE_CODE = 'ru-ru'
+TIME_ZONE = 'Europe/Moscow'
 USE_I18N = True
 USE_L10N = True
 USE_TZ = True
@@ -92,6 +92,14 @@ STATIC_URL = '/static/'
 STORAGE = os.path.join(BASE_DIR, 'storage')
 
 AUTH_USER_MODEL = 'shop.User'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+EMAIL_HOST = 'smtp.mail.ru'
+EMAIL_HOST_USER = 'netology-pdiplom@mail.ru'
+EMAIL_HOST_PASSWORD = 'i~8W4rdRPFlo'
+EMAIL_PORT = '465'
+EMAIL_USE_SSL = True
+SERVER_EMAIL = EMAIL_HOST_USER
 
 REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
@@ -104,8 +112,6 @@ REST_FRAMEWORK = {
     ),
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
 
