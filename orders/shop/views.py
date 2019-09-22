@@ -337,7 +337,7 @@ class ContactView(APIView):
         if not request.user.is_authenticated:
             return JsonResponse({'Status': False, 'Error': 'Log in required'}, status=status.HTTP_403_FORBIDDEN)
 
-        if {'city', 'street', 'phone'}.issubset(request.data):
+        if {'city', 'phone'}.issubset(request.data):
             request.data._mutable = True
             request.data.update({'user': request.user.id})
             serializer = ContactSerializer(data=request.data)
