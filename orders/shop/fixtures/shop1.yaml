@@ -7,7 +7,7 @@ categories:
   - id: 1
     name: Flash-накопители
 
-goods:
+products:
   - id: 4216292
     category: 224
     model: apple/iphone/xs-max
@@ -15,7 +15,7 @@ goods:
     price: 110000
     price_rrc: 116990
     quantity: 14
-    parameters:
+    product_parameters:
       "Диагональ (дюйм)": 6.5
       "Разрешение (пикс)": 2688x1242
       "Встроенная память (Гб)": 512
@@ -27,7 +27,7 @@ goods:
     price: 65000
     price_rrc: 69990
     quantity: 9
-    parameters:
+    product_parameters:
       "Диагональ (дюйм)": 6.1
       "Разрешение (пикс)": 1792x828
       "Встроенная память (Гб)": 256
@@ -39,7 +39,7 @@ goods:
     price: 65000
     price_rrc: 69990
     quantity: 5
-    parameters:
+    product_parameters:
       "Диагональ (дюйм)": 6.1
       "Разрешение (пикс)": 1792x828
       "Встроенная память (Гб)": 256
@@ -51,7 +51,7 @@ goods:
     price: 60000
     price_rrc: 64990
     quantity: 7
-    parameters:
+    product_parameters:
       "Диагональ (дюйм)": 6.1
       "Разрешение (пикс)": 1792x828
       "Встроенная память (Гб)": 256
