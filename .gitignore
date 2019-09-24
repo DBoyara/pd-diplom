@@ -12,3 +12,4 @@ venv/
 ### Project specific ###
 settings_local.py
 orders/shop/migrations/
+orders/static/
