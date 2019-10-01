@@ -20,8 +20,8 @@ from distutils.util import strtobool
 from requests import get
 
 from .signals import new_user_registered
-from .models import Category, Shop, ProductInfo, Order, OrderItem, ConfirmEmailToken, Contact, Product, \
-    ProductParameter, Parameter
+from .models import Category, Shop, ProductInfo, Order, OrderItem, Product, ProductParameter, Parameter
+from auth_api.models import Contact, ConfirmEmailToken
 from .serializers import CategorySerializer, ShopSerializer, ProductInfoSerializer, OrderSerializer, \
     OrderItemSerializer, UserSerializer, ContactSerializer
 

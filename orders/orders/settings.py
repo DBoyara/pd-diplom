@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'django_rest_passwordreset',
     'import_export',
     'shop',
+    'auth_api',
 ]
 
 MIDDLEWARE = [
@@ -93,7 +94,7 @@ STATIC_URL = '/static/'
 
 STORAGE = os.path.join(BASE_DIR, 'storage')
 
-AUTH_USER_MODEL = 'shop.User'
+AUTH_USER_MODEL = 'auth_api.User'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 EMAIL_HOST = 'smtp.mail.ru'
@@ -114,6 +115,7 @@ REST_FRAMEWORK = {
     ),
 
     'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.SessionAuthentication',
         'rest_framework.authentication.TokenAuthentication',
     ),
 

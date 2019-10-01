@@ -1,6 +1,7 @@
 from rest_framework import serializers
 
 from .models import User, Category, Shop, ProductInfo, Product, ProductParameter, OrderItem, Order, Contact
+from auth_api.models import User, Contact
 
 
 class ContactSerializer(serializers.ModelSerializer):
@@ -18,7 +19,7 @@ class UserSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'first_name', 'last_name', 'email', 'company', 'position', 'type',)
+        fields = ('id', 'first_name', 'last_name', 'email', 'company', 'position', 'type', 'contacts')
         read_only_fields = ('id',)
 
 

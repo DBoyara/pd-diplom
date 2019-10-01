@@ -13,3 +13,4 @@ venv/
 settings_local.py
 orders/shop/migrations/
 orders/static/
+orders/auth_api/migrations/
