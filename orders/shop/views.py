@@ -30,6 +30,7 @@ class RegisterAccount(APIView):
     """
     Для регистрации покупателей
     """
+
     # Регистрация методом POST
     def post(self, request, *args, **kwargs):
 
@@ -69,6 +70,7 @@ class ConfirmAccount(APIView):
     """
     Класс для подтверждения почтового адреса
     """
+
     def post(self, request, *args, **kwargs):
         # проверяем обязательные аргументы
         if {'email', 'token'}.issubset(request.data):
@@ -90,6 +92,7 @@ class LoginAccount(APIView):
     """
     Класс для авторизации пользователей
     """
+
     def post(self, request, *args, **kwargs):
         if {'email', 'password'}.issubset(request.data):
             user = authenticate(request, username=request.data['email'], password=request.data['password'])
@@ -110,6 +113,7 @@ class AccountDetails(APIView):
     """
     Класс для работы данными пользователя
     """
+
     # Возвращает все данные пользователя включая все контакты.
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -161,6 +165,7 @@ class ProductInfoView(APIView):
     """
     Класс для поиска товаров
     """
+
     def get(self, request, *args, **kwargs):
 
         query = Q(shop__state=True)
@@ -280,6 +285,7 @@ class OrderView(APIView):
     """
     Класс для получения и размешения заказов пользователями
     """
+
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response({'Status': False, 'Error': 'Log in required'}, status=status.HTTP_403_FORBIDDEN)
@@ -394,6 +400,7 @@ class PartnerOrders(APIView):
     """
     Класс для получения заказов поставщиками
     """
+
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response({'Status': False, 'Error': 'Login required'}, status=status.HTTP_403_FORBIDDEN)
@@ -403,7 +410,7 @@ class PartnerOrders(APIView):
 
         pr = Prefetch('ordered_items', queryset=OrderItem.objects.filter(shop__user_id=request.user.id))
         order = Order.objects.filter(
-            ordered_items__shop__user_id=request.user.id).exclude(status='basket')\
+            ordered_items__shop__user_id=request.user.id).exclude(status='basket') \
             .prefetch_related(pr).select_related('contact').annotate(
             total_sum=Sum('ordered_items__total_amount'),
             total_quantity=Sum('ordered_items__quantity'))
@@ -416,6 +423,7 @@ class PartnerState(APIView):
     """
     Класс для работы со статусом поставщика
     """
+
     # Получить текущий статус получения заказов у магазина
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -451,6 +459,7 @@ class PartnerUpdate(APIView):
     """
     Класс для обновления прайса от поставщика
     """
+
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
             return Response({'Status': False, 'Error': 'Log in required'}, status=status.HTTP_403_FORBIDDEN)
@@ -472,27 +481,38 @@ class PartnerUpdate(APIView):
 
                 shop, _ = Shop.objects.get_or_create(user_id=request.user.id,
                                                      defaults={'name': data['shop'], 'url': url})
-                for category in data['categories']:
-                    category_object, _ = Category.objects.get_or_create(id=category['id'], name=category['name'])
-                    category_object.shops.add(shop.id)
-                    category_object.save()
+
+                load_cat = [
+                    Category(id=category['id'], name=category['name']) for category in data['categories']
+                ]
+                Category.objects.bulk_create(load_cat)
+
                 Product.objects.filter(shop_id=shop.id).delete()
+
+                load_prod = []
+                product_id = {}
+                load_pp = []
                 for item in data['goods']:
-                    product = Product.objects.create(name=item['name'],
-                                                     category_id=item['category'],
-                                                     model=item['model'],
-                                                     external_id=item['id'],
-                                                     shop_id=shop.id,
-                                                     quantity=item['quantity'],
-                                                     price=item['price'],
-                                                     price_rrc=item['price_rrc'])
+                    load_prod.append(Product(name=item['name'],
+                                             category_id=item['category'],
+                                             model=item['model'],
+                                             external_id=item['id'],
+                                             shop_id=shop.id,
+                                             quantity=item['quantity'],
+                                             price=item['price'],
+                                             price_rrc=item['price_rrc']))
+                    product_id[item['id']] = {}
+
                     for name, value in item['parameters'].items():
                         parameter, _ = Parameter.objects.get_or_create(name=name)
-                        ProductParameter.objects.create(product_id=product.id,
+                        product_id[item['id']].update({parameter.id: value})
+                        load_pp.append(ProductParameter(product_id=product_id[item['id']][parameter.id],
                                                         parameter_id=parameter.id,
-                                                        value=value)
+                                                        value=value))
+                Product.objects.bulk_create(load_prod)
+                ProductParameter.objects.bulk_create(load_pp)
+
                 return Response({'Status': True})
 
         return Response({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'},
                         status=status.HTTP_400_BAD_REQUEST)
-

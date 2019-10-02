@@ -3,10 +3,10 @@ import sentry_sdk
 
 from sentry_sdk.integrations.django import DjangoIntegration
 
-sentry_sdk.init(
-    dsn="https://a5e9aecf82a446269978912f4c8aa2c1@sentry.io/1725720",
-    integrations=[DjangoIntegration()]
-)
+# sentry_sdk.init(
+#     dsn="https://a5e9aecf82a446269978912f4c8aa2c1@sentry.io/1725720",
+#     integrations=[DjangoIntegration()]
+# )
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
