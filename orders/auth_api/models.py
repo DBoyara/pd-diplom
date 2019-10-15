@@ -51,9 +51,13 @@ class User(AbstractUser):
     Стандартная модель пользователей
     """
     objects = UserManager()
+    email = models.EmailField(verbose_name='Email', max_length=40, unique=True)
     company = models.CharField(verbose_name='Компания', max_length=40, blank=True, null=True)
     position = models.CharField(verbose_name='Должность', max_length=40, blank=True, null=True)
     type = models.CharField(verbose_name='Тип пользователя', choices=USER_TYPE_CHOICES, max_length=5, default='buyer')
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
 
     def __str__(self):
         return self.email

@@ -19,6 +19,7 @@ from ujson import loads as load_json
 from distutils.util import strtobool
 from requests import get
 
+from shop.tasks import import_shop_data
 from .signals import new_user_registered
 from .models import Category, Shop, ProductInfo, Order, OrderItem, Product, ProductParameter, Parameter
 from auth_api.models import Contact, ConfirmEmailToken
@@ -467,52 +468,12 @@ class PartnerUpdate(APIView):
         if request.user.type != 'shop':
             return Response({'Status': False, 'Error': 'Только для магазинов'}, status=status.HTTP_403_FORBIDDEN)
 
-        url = request.data.get('url')
-        if url:
-            validate_url = URLValidator()
-            try:
-                validate_url(url)
-            except ValidationError as e:
-                return Response({'Status': False, 'Error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-            else:
-                stream = get(url).content
+        file = request.FILES
+        if file:
+            user_id = request.user.id
+            import_shop_data(file, user_id)
 
-                data = load_yaml(stream, Loader=Loader)
-
-                shop, _ = Shop.objects.get_or_create(user_id=request.user.id,
-                                                     defaults={'name': data['shop'], 'url': url})
-
-                load_cat = [
-                    Category(id=category['id'], name=category['name']) for category in data['categories']
-                ]
-                Category.objects.bulk_create(load_cat)
-
-                Product.objects.filter(shop_id=shop.id).delete()
-
-                load_prod = []
-                product_id = {}
-                load_pp = []
-                for item in data['goods']:
-                    load_prod.append(Product(name=item['name'],
-                                             category_id=item['category'],
-                                             model=item['model'],
-                                             external_id=item['id'],
-                                             shop_id=shop.id,
-                                             quantity=item['quantity'],
-                                             price=item['price'],
-                                             price_rrc=item['price_rrc']))
-                    product_id[item['id']] = {}
-
-                    for name, value in item['parameters'].items():
-                        parameter, _ = Parameter.objects.get_or_create(name=name)
-                        product_id[item['id']].update({parameter.id: value})
-                        load_pp.append(ProductParameter(product_id=product_id[item['id']][parameter.id],
-                                                        parameter_id=parameter.id,
-                                                        value=value))
-                Product.objects.bulk_create(load_prod)
-                ProductParameter.objects.bulk_create(load_pp)
-
-                return Response({'Status': True})
+            return Response({'Status': True})
 
         return Response({'Status': False, 'Errors': 'Не указаны все необходимые аргументы'},
                         status=status.HTTP_400_BAD_REQUEST)
