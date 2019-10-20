@@ -33,7 +33,7 @@ class CategorySerializer(serializers.ModelSerializer):
 class ShopSerializer(serializers.ModelSerializer):
     class Meta:
         model = Shop
-        fields = ('id', 'name', 'state', 'url')
+        fields = ('id', 'name', 'state')
         read_only_fields = ('id',)
 
 
@@ -66,7 +66,7 @@ class ProductInfoSerializer(serializers.ModelSerializer):
 class OrderItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrderItem
-        fields = ('id', 'product_info', 'quantity', 'order', 'total_amount')
+        fields = ('id', 'product_info', 'quantity', 'order')
         read_only_fields = ('id',)
         extra_kwargs = {
             'order': {'write_only': True}
@@ -85,5 +85,5 @@ class OrderSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Order
-        fields = ('id', 'ordered_items', 'status', 'dt', 'total_amount', 'contact',)
+        fields = ('id', 'ordered_items', 'status', 'dt', 'total_sum', 'contact',)
         read_only_fields = ('id',)

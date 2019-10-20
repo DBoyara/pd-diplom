@@ -1,6 +1,6 @@
 import yaml
 
-from django.conf import settings
+from django.conf.global_settings import EMAIL_HOST_USER
 from django.core.mail.message import EmailMultiAlternatives
 
 from orders.celery import app
@@ -8,12 +8,13 @@ from orders.celery import app
 from .models import Category, Parameter, ProductParameter, Product, Shop
 
 
-@app.task(bind=True, default_retry_delay=5 * 60, max_retries=3, ignore_result=True)
-def send_email(title, message, email):
-    title = str(title)
-    message = str(message)
+@app.task()
+def send_email(message: str, email: str, *args, **kwargs) -> str:
+    title = 'Title'
+    email_list = list()
+    email_list.append(email)
     try:
-        msg = EmailMultiAlternatives(title, message, settings.EMAIL_HOST_USER, email)
+        msg = EmailMultiAlternatives(subject=title, body=message, from_email=EMAIL_HOST_USER, to=email_list)
         msg.send()
         return f'Title: {msg.subject}, Message:{msg.body}'
     except Exception as e:
@@ -26,7 +27,7 @@ def open_file(shop):
     return data
 
 
-@app.task(bind=True, default_retry_delay=5 * 60, max_retries=3, ignore_result=True)
+@app.task()
 def import_shop_data(data, user_id):
     file = open_file(data)
 
