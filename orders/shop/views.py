@@ -31,6 +31,7 @@ class RegisterAccount(APIView):
     """
     Для регистрации покупателей
     """
+    throttle_scope = 'anon'
 
     # Регистрация методом POST
     def post(self, request, *args, **kwargs):
@@ -69,6 +70,7 @@ class ConfirmAccount(APIView):
     """
     Класс для подтверждения почтового адреса
     """
+    throttle_scope = 'anon'
 
     def post(self, request, *args, **kwargs):
         # проверяем обязательные аргументы
@@ -91,6 +93,7 @@ class LoginAccount(APIView):
     """
     Класс для авторизации пользователей
     """
+    throttle_scope = 'anon'
 
     def post(self, request, *args, **kwargs):
         if {'email', 'password'}.issubset(request.data):
@@ -112,6 +115,7 @@ class AccountDetails(APIView):
     """
     Класс для работы данными пользователя
     """
+    throttle_scope = 'user'
 
     # Возвращает все данные пользователя включая все контакты.
     def get(self, request, *args, **kwargs):
@@ -164,6 +168,7 @@ class ProductInfoView(APIView):
     """
     Класс для поиска товаров
     """
+    throttle_scope = 'anon'
 
     def get(self, request, *args, **kwargs):
 
@@ -192,6 +197,7 @@ class BasketView(APIView):
     """
     Класс для работы с корзиной пользователя
     """
+    throttle_scope = 'user'
 
     # получить корзину
     def get(self, request, *args, **kwargs):
@@ -284,6 +290,7 @@ class OrderView(APIView):
     """
     Класс для получения и размешения заказов пользователями
     """
+    throttle_scope = 'user'
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -327,6 +334,7 @@ class ContactView(APIView):
     """
     Класс для работы с контактами покупателей
     """
+    throttle_scope = 'user'
 
     # получить мои контакты
     def get(self, request, *args, **kwargs):
@@ -399,6 +407,7 @@ class PartnerOrders(APIView):
     """
     Класс для получения заказов поставщиками
     """
+    throttle_scope = 'user'
 
     def get(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -422,6 +431,7 @@ class PartnerState(APIView):
     """
     Класс для работы со статусом поставщика
     """
+    throttle_scope = 'user'
 
     # Получить текущий статус получения заказов у магазина
     def get(self, request, *args, **kwargs):
@@ -458,6 +468,7 @@ class PartnerUpdate(APIView):
     """
     Класс для обновления прайса от поставщика
     """
+    throttle_scope = 'partner'
 
     def post(self, request, *args, **kwargs):
         if not request.user.is_authenticated:
