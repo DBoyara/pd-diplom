@@ -1,14 +1,12 @@
 from django.conf import settings
 from django.contrib.auth import authenticate
 from django.contrib.auth.password_validation import validate_password
-from django.core.validators import URLValidator
-from django.core.exceptions import ValidationError
 from django.db import IntegrityError
 from django.db.models import Q, Sum, F
 from django.db.models.query import Prefetch
 from django.http import JsonResponse
 
-from rest_framework import status
+from rest_framework import status, viewsets
 from rest_framework.generics import ListAPIView
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -148,33 +146,38 @@ class AccountDetails(APIView):
             return Response({'Status': False, 'Errors': user_serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class CategoryView(ListAPIView):
+class CategoryView(viewsets.ModelViewSet):
     """
     Класс для просмотра категорий
     """
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    ordering = ('name',)
 
 
-class ShopView(ListAPIView):
+class ShopView(viewsets.ModelViewSet):
     """
     Класс для просмотра списка магазинов
     """
-    queryset = Shop.objects.filter(state=True)
+
+    queryset = Shop.objects.all()
     serializer_class = ShopSerializer
+    ordering = ('name',)
 
 
-class ProductInfoView(APIView):
+class ProductInfoView(viewsets.ReadOnlyModelViewSet):
     """
     Класс для поиска товаров
     """
     throttle_scope = 'anon'
+    serializer_class = ProductInfoSerializer
+    ordering = ('product',)
 
-    def get(self, request, *args, **kwargs):
+    def get_queryset(self):
 
         query = Q(shop__state=True)
-        shop_id = request.query_params.get('shop_id')
-        category_id = request.query_params.get('category_id')
+        shop_id = self.request.query_params.get('shop_id')
+        category_id = self.request.query_params.get('category_id')
 
         if shop_id:
             query = query & Q(shop_id=shop_id)
@@ -188,9 +191,7 @@ class ProductInfoView(APIView):
             'shop', 'product__category').prefetch_related(
             'product_parameters__parameter').distinct()
 
-        serializer = ProductInfoSerializer(queryset, many=True)
-
-        return Response(serializer.data)
+        return queryset
 
 
 class BasketView(APIView):
